@@ -279,7 +279,7 @@ namespace Homework_number_45
             }
         }
 
-        private static int GetNumber()
+        private int GetNumber()
         {
             bool isNumber = false;
             string userInput;
