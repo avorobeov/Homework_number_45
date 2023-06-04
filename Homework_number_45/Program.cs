@@ -68,9 +68,9 @@ namespace Homework_number_45
         public int Health { get; protected set; }
         public int Armour { get; protected set; }
 
-        public virtual int GetDamage()
+        public virtual void Attack(Warrior warrior)
         {
-            return Damage;
+            warrior.TakeDamage(Damage);
         }
 
         public virtual void TakeDamage(int damage)
@@ -110,19 +110,19 @@ namespace Homework_number_45
             return new Knight(Name, Health, Armour, Damage);
         }
 
-        public override int GetDamage()
+        public override void Attack(Warrior warrior)
         {
             if (HitsInRow == MaxHitsInRow)
             {
                 HitsInRow = 0;
 
-                return Damage + Damage;
+                warrior.TakeDamage(Damage + Damage);
             }
             else
             {
                 HitsInRow++;
 
-                return Damage;
+                warrior.TakeDamage(Damage);
             }
         }
     }
@@ -251,8 +251,8 @@ namespace Homework_number_45
 
                 while (_firstFighter.Health > 0 && _secondFighter.Health > 0)
                 {
-                    _firstFighter.TakeDamage(_secondFighter.GetDamage());
-                    _secondFighter.TakeDamage(_firstFighter.GetDamage());
+                    _firstFighter.Attack(_secondFighter);
+                    _secondFighter.Attack(_firstFighter);
 
                     _firstFighter.ShowStats();
                     _secondFighter.ShowStats();
