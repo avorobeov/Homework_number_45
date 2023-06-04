@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Homework_number_45
 {
@@ -6,11 +7,55 @@ namespace Homework_number_45
     {
         static void Main(string[] args)
         {
-        }
+            const string CommandSelectFighters = "1";
+            const string CommandStartFight = "2";
+            const string CommandExit = "3";
+
+            List<Warrior> warriors = new List<Warrior> { new Warrior("Warrior", 100, 10, 30), new Knight("Knight", 80, 15, 25), new Barbarian("Barbarian", 110, 5, 35), new Magician("Magician", 90, 5, 45), new Oracle("Oracle", 95, 10, 30) };
+
+            Arena arena = new Arena(warriors);
+
+            bool isExit = false;
+            string userInput;
+
+            while (isExit == false)
+            {
+                Console.WriteLine($"\n\nДля того что бы выбрать бойца нажмите: {CommandSelectFighters}\n" +
+                                  $"Для того что бы начать поединок нажмите:{CommandStartFight}\n" +
+                                  $"Для того что бы выйти нажмите: {CommandExit}\n");
+
+                userInput = Console.ReadLine();
+
+                switch (userInput)
+                {
+                    case CommandSelectFighters:
+                        arena.SelectFighters();
+                        break;
+
+                    case CommandStartFight:
+                        arena.StartFight();
+                        break;
+
+                    case CommandExit:
+                        isExit = true;
+                        break;
+
+                    default:
+                        Console.WriteLine("Такой комады нет в списке команд!");
+                        break;
+                }
+
+                Console.WriteLine("Для продолжения ведите любую клавишу...");
+                Console.ReadKey();
+                Console.Clear();
+            }
+    }
     }
 
     class Warrior
     {
+        protected int Damage;
+       
         public Warrior(string name, int health, int armour, int damage)
         {
             Name = name;
@@ -22,23 +67,23 @@ namespace Homework_number_45
         public string Name { get; protected set; }
         public int Health { get; protected set; }
         public int Armour { get; protected set; }
-        public virtual int Damage
+
+        public virtual int GetDamage()
         {
-            get
-            {
-                return Damage;
-            }
-            protected set { }
+            return Damage;
         }
 
         public virtual void TakeDamage(int damage)
         {
             Health -= damage - Armour;
-
-            ShowMessage($"Получил урон - {damage}", ConsoleColor.Red);
         }
 
-        public void ShowInfo()
+        public virtual Warrior Clone()
+        {
+            return new Warrior(Name, Health, Armour, Damage);
+        }
+
+        public void ShowStats()
         {
             ShowMessage($"{Name} HP: {Health} ARMOR : {Armour} DMG: {Damage}");
         }
@@ -60,22 +105,24 @@ namespace Homework_number_45
         {
         }
 
-        public override int Damage
+        public override Warrior Clone()
         {
-            get
+            return new Knight(Name, Health, Armour, Damage);
+        }
+
+        public override int GetDamage()
+        {
+            if (HitsInRow == MaxHitsInRow)
             {
-                if (HitsInRow == MaxHitsInRow)
-                {
-                    HitsInRow = 0;
+                HitsInRow = 0;
 
-                    return Damage + Damage;
-                }
-                else
-                {
-                    HitsInRow++;
+                return Damage + Damage;
+            }
+            else
+            {
+                HitsInRow++;
 
-                    return Damage;
-                } 
+                return Damage;
             }
         }
     }
@@ -96,13 +143,18 @@ namespace Homework_number_45
             }
         }
 
+        public override Warrior Clone()
+        {
+            return new Barbarian(Name, Health, Armour, Damage);
+        }
+
         private bool IsDamageSuccessful(double probability)
         {
             Random random = new Random();
 
             double randomValue = random.NextDouble();
 
-            if (randomValue <= probability)
+            if (randomValue >= probability)
             {
                 return true;
             }
@@ -126,8 +178,11 @@ namespace Homework_number_45
             base.TakeDamage(damage);
 
             Health += _quantitySelfHeal;
+        }
 
-            ShowMessage($"Восстановил XP - {damage}", ConsoleColor.Cyan);
+        public override Warrior Clone()
+        {
+            return new Magician(Name, Health, Armour, Damage);
         }
     }
 
@@ -150,44 +205,102 @@ namespace Homework_number_45
                 base.TakeDamage(damage);
             }
         }
+
+        public override Warrior Clone()
+        {
+            return new Oracle(Name, Health, Armour, Damage);
+        }
     }
 
     class Arena
     {
+        private List<Warrior> _warriors = new List<Warrior>();
         private Warrior _firstFighter;
         private Warrior _secondFighter;
+        private bool _isReadyBattle = false;
 
-        public void AssignFighters(Warrior firstFighter, Warrior secondFighter)
+        public Arena(List<Warrior> warriors)
         {
-            _firstFighter = firstFighter;
-            _secondFighter = secondFighter;
+            _warriors = warriors;
+        }
+
+        public void SelectFighters()
+        {
+            Console.WriteLine("\nДля выбора бойца укажите его номер\n\n");
+
+            for (int i = 0; i < _warriors.Count; i++)
+            {
+                Console.Write($"{i}) ");
+                _warriors[i].ShowStats();
+            }
+
+            _firstFighter = _warriors[GetNumber()].Clone();
+            _secondFighter = _warriors[GetNumber()].Clone();
+
+            _isReadyBattle = true;
         }
 
         public void StartFight()
         {
-            Console.WriteLine("Бой начинается \n\r\nВстречайте  бойцов");
+            if (_isReadyBattle == true)
+            {
+                Console.WriteLine("Бой начинается \n\r\nВстречайте  бойцов");
 
-            _firstFighter.ShowInfo();
-            _secondFighter.ShowInfo();
+                _firstFighter.ShowStats();
+                _secondFighter.ShowStats();
 
-            while (_firstFighter.Health > 0 && _secondFighter.Health > 0)
+                while (_firstFighter.Health > 0 && _secondFighter.Health > 0)
+                {
+                    _firstFighter.TakeDamage(_secondFighter.GetDamage());
+                    _secondFighter.TakeDamage(_firstFighter.GetDamage());
+
+                    _firstFighter.ShowStats();
+                    _secondFighter.ShowStats();
+                }
+
+                _isReadyBattle = false;
+
+                if (_firstFighter.Health <= 0 && _secondFighter.Health <= 0)
+                {
+                    Console.WriteLine($"\n\n К сожалению мы не смогли определить лучного бойца поединок закончился ничей");
+                }
+                else if (_secondFighter.Health <= 0)
+                {
+                    ShowTheWinner(_firstFighter.Name);
+                }
+                else if (_firstFighter.Health <= 0)
+                {
+                    ShowTheWinner(_secondFighter.Name);
+                }
+            }
+            else
             {
-                _firstFighter.TakeDamage(_secondFighter.Damage);
-                _secondFighter.TakeDamage((_secondFighter.Damage));
+                Console.WriteLine("Вы не выбрали бойцов для поединка");
+            }
+        }
+
+        private static int GetNumber()
+        {
+            bool isNumber = false;
+            string userInput;
+            int number = 0;
+
+            while (isNumber == false)
+            {
+                Console.Write("\nУкажите номер первого бойца: ");
+                userInput = Console.ReadLine();
+
+                if (int.TryParse(userInput, out number))
+                {
+                    isNumber = true;
+                }
+                else
+                {
+                    Console.WriteLine("Такого бойца нет на арене!");
+                }
             }
 
-            if (_firstFighter.Health <= 0 && _secondFighter.Health <= 0)
-            {
-                Console.WriteLine($"\n\n К сожалению мы не смогли определить лучного бойца поединок закончился ничей");
-            }
-            else if(_secondFighter.Health <= 0)
-            {
-                ShowTheWinner(_firstFighter.Name);
-            }
-            else if(_firstFighter.Health <= 0)
-            {
-                ShowTheWinner(_secondFighter.Name);
-            }
+            return number;
         }
 
         private void ShowTheWinner(string winner)
