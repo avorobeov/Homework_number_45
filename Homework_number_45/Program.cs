@@ -88,7 +88,7 @@ namespace Homework_number_45
             ShowMessage($"{Name} HP: {Health} ARMOR : {Armour} DMG: {Damage}");
         }
 
-        protected void ShowMessage(string text, ConsoleColor consoleColor = ConsoleColor.Blue)
+        private void ShowMessage(string text, ConsoleColor consoleColor = ConsoleColor.Blue)
         {
             Console.ForegroundColor = consoleColor;
             Console.WriteLine(text);
