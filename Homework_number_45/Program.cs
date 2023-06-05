@@ -66,7 +66,7 @@ namespace Homework_number_45
 
         public string Name { get; protected set; }
         public int Health { get; protected set; }
-        public int Armour { get; protected set; }
+        protected int Armour { get; set; }
 
         public virtual void Attack(Warrior warrior)
         {
@@ -75,7 +75,10 @@ namespace Homework_number_45
 
         public virtual void TakeDamage(int damage)
         {
-            Health -= damage - Armour;
+            if (damage > 0 && damage > Armour)
+            {
+                Health -= damage - Armour;
+            }
         }
 
         public virtual Warrior Clone()
@@ -214,7 +217,7 @@ namespace Homework_number_45
 
     class Arena
     {
-        private List<Warrior> _warriors = new List<Warrior>();
+        private List<Warrior> _warriors;
         private Warrior _firstFighter;
         private Warrior _secondFighter;
         private bool _isReadyBattle = false;
