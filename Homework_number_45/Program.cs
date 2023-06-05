@@ -11,7 +11,11 @@ namespace Homework_number_45
             const string CommandStartFight = "2";
             const string CommandExit = "3";
 
-            List<Warrior> warriors = new List<Warrior> { new Warrior("Warrior", 100, 10, 30), new Knight("Knight", 80, 15, 25), new Barbarian("Barbarian", 110, 5, 35), new Magician("Magician", 90, 5, 45), new Oracle("Oracle", 95, 10, 30) };
+            List<Warrior> warriors = new List<Warrior> { new Warrior("Warrior", 100, 10, 30),
+                                                         new Knight("Knight", 80, 15, 25),
+                                                         new Barbarian("Barbarian", 110, 5, 35),
+                                                         new Magician("Magician", 90, 5, 45),
+                                                         new Oracle("Oracle", 95, 10, 30) };
 
             Arena arena = new Arena(warriors);
 
