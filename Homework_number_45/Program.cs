@@ -59,7 +59,8 @@ namespace Homework_number_45
     class Warrior
     {
         protected int Damage;
-       
+        protected int Armour;
+
         public Warrior(string name, int health, int armour, int damage)
         {
             Name = name;
@@ -70,8 +71,7 @@ namespace Homework_number_45
 
         public string Name { get; protected set; }
         public int Health { get; protected set; }
-        protected int Armour { get; set; }
-
+       
         public virtual void Attack(Warrior warrior)
         {
             warrior.TakeDamage(Damage);
@@ -161,14 +161,7 @@ namespace Homework_number_45
 
             double randomValue = random.NextDouble();
 
-            if (randomValue >= probability)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return randomValue >= probability;
         }
     }
 
@@ -273,11 +266,11 @@ namespace Homework_number_45
                 }
                 else if (_secondFighter.Health <= 0)
                 {
-                    ShowTheWinner(_firstFighter.Name);
+                    ShowWinner(_firstFighter.Name);
                 }
                 else if (_firstFighter.Health <= 0)
                 {
-                    ShowTheWinner(_secondFighter.Name);
+                    ShowWinner(_secondFighter.Name);
                 }
             }
             else
@@ -297,7 +290,7 @@ namespace Homework_number_45
                 Console.Write("\nУкажите номер первого бойца: ");
                 userInput = Console.ReadLine();
 
-                if (int.TryParse(userInput, out number))
+                if (int.TryParse(userInput, out number) && number > 0 && number <= _warriors.Count)
                 {
                     isNumber = true;
                 }
@@ -310,7 +303,7 @@ namespace Homework_number_45
             return number;
         }
 
-        private void ShowTheWinner(string winner)
+        private void ShowWinner(string winner)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"\n\nБоец под именем {winner} одержал победу !!!");
