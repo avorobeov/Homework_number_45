@@ -290,7 +290,7 @@ namespace Homework_number_45
                 Console.Write("\nУкажите номер первого бойца: ");
                 userInput = Console.ReadLine();
 
-                if (int.TryParse(userInput, out number) && number > 0 && number <= _warriors.Count)
+                if (int.TryParse(userInput, out number) && number >= 0 && number < _warriors.Count)
                 {
                     isNumber = true;
                 }
